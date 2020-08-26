@@ -38,10 +38,43 @@
 				<tr>
 					<td>${party.name}</td>
 					<td>${party.date}</td>
+					<td><a class="btn btn-secondary" href="/see-details?id=${party.id}">See Details</a></td>
 				</tr>
 				</c:forEach>
 			</tbody>
 		</table>
 	</div>
+	
+	<p>
+	<h1>RSVP</h1>
+	<form action="rsvp-add" method = "post">
+	<label>Party</label>
+	<select name="party">
+		<c:forEach var="party" items="${party}">
+					<option value="${party.id}">
+						<c:out value="${party.name}" />
+					</option>
+				</c:forEach>
+	</select>
+	<label>Name</label> <input type="text" required name="name">
+	<label>Comment</label> <input type="text" required name="comment">
+	<button type="submit" class="btn btn-warning">RSVP</button>
+	</form>
+		<div>
+		<p>
+<h2>Add A Party</h2>
+		<form action="/party-add" method="post">
+		<table class="table">
+			<tr>
+				<th>Name</th>
+				<td><input type="text" name="name" autofocus/></td>
+				<th>Date</th>
+				<td><input type="date" name="date"/></td>
+				</tr>
+		</table>
+		<button type="submit" class="btn btn-primary">Add</button>
+		</form>
+		</div>
+	</p>
 </body>
 </html>

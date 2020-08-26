@@ -1,4 +1,5 @@
 package co.grandcircus.lab24;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -6,15 +7,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import co.grandcircus.lab24.dao.PartyRepo;
+import co.grandcircus.lab24.dao.RsvpRepo;
 import co.grandcircus.lab24.entity.Party;
 import co.grandcircus.lab24.entity.PartyOption;
+import co.grandcircus.lab24.entity.Rsvp;
 import co.grandcircus.lab24.dao.PartyOptionRepo;
 
 @Controller
@@ -28,6 +33,8 @@ public class PartyController {
 	private PartyRepo dao;
 	@Autowired
 	private PartyOptionRepo dao2;
+	@Autowired
+	private RsvpRepo dao3;
 	
 	@RequestMapping("/")
 	public String index() {
@@ -73,27 +80,35 @@ public class PartyController {
 		dao2.save(newParty);
 		return "redirect:/vote-page";
 	}
-	
-	@PostMapping("/rooms/edit")
-	public String save(@RequestParam("id") Long id, Party party) {
-		dao.save(party);
-		return "redirect:/rooms/detail?id=" + id;
+	@PostMapping("/rsvp-add")
+	public String rsvp(@RequestParam("name") String name, @RequestParam("comment")String comment,@RequestParam("party") Party party, Model model) {
+		Rsvp rsvps = new Rsvp();
+		Party thisParty = party;
+		rsvps.setAttendee(name);
+		rsvps.setComment(comment);
+		rsvps.setParty(thisParty);
+		dao3.save(rsvps);
+		model.addAttribute("partyName",thisParty.getName());
+		model.addAttribute("partyDate", thisParty.getDate());
+		List<Rsvp> attendees = dao3.findRsvps(thisParty.getId());
+		model.addAttribute("attendees",attendees);
+		return "party-details";
 	}
 	
-	@RequestMapping("/rooms/add")
-	public String showAdd() {		
-		return "add";
+	@RequestMapping("/see-details")
+	public String details(@RequestParam("id") Long id, Model model) {
+		Party thisParty = dao.findById(id).get();
+		model.addAttribute("partyName",thisParty.getName());
+		model.addAttribute("partyDate", thisParty.getDate());
+		List<Rsvp> attendees = dao3.findRsvps(thisParty.getId());
+		model.addAttribute("attendees",attendees);
+		return "party-details";
+	}
+	@PostMapping("/party-add")
+	public String addParty(Party party,Model model) {
+
+		dao.save(party);	
+		return "redirect:/homepage";
 	}
 	
-	@PostMapping("/rooms/add")
-	public String submitAdd(Party party) {	
-		dao.save(party); // "save" is used for both update and create
-		return "redirect:/rooms";
-	}
-	
-	@RequestMapping("/rooms/delete")
-	public String remove(@RequestParam("id") Long id) {
-		dao.deleteById(id);
-		return "redirect:/rooms";
-	}
 }

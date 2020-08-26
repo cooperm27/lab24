@@ -16,23 +16,35 @@
 	crossorigin="anonymous">
 <link href="/style.css" rel="stylesheet" />
 </head>
-<h1>Parties</h1>
-<body>
 
-<div class="container">
-		<h1>Upcoming Parties</h1>
+<h1>Party: ${partyName} </h1><br>
+<ul class = "navbar-nav" id = "list">
+		<li class = "nav-item"><a class = "nav-link" href="homepage">HomePage</a></li>
+		<li class = "nav-item"><a class = "nav-link" href="review-page">Review Options</a></li>
+	</ul>
+<body class = "container">
+
+<h4>Party Date: ${partyDate}</h4><br>
+
+<h2>RSVPs</h2>
+
+<div>
 		<table class="table">
-			<tr>
-				<th scope="row">Name</th>
-				<td>${party.name}</td>
-			</tr>
-			<tr>
-				<th scope="row">Date</th>
-				<td>${party.date}</td>
-			</tr>
+			<thead>
+				<tr>
+					<th>Attendee</th><th>Comment</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="attendees" items="${attendees}">
+				<tr>
+					<td>${attendees.attendee}</td>
+					<td>${attendees.comment}</td>
+				</tr>
+				</c:forEach>
+			</tbody>
 		</table>
-		</div>
-<body>
+	</div>
 
 </body>
 </html>
